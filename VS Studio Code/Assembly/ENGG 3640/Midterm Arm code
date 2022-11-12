@@ -1,0 +1,85 @@
+section	.text
+	global _start       ;must be declared for using gcc
+_start:                     ;tell linker entry point
+
+ACC01 .req r6
+K1 .req r7
+K2 .req r8
+K2 .req r9
+Vcruise .req r10
+Vset .req r11
+deltaV .req r12
+Xset .req r13
+Flag01 .req r14
+Xn .req r16
+Vn .req r17
+Vn1 .req r18
+Vn2 .req r19
+Vplus .req r20
+Vminus .req r21
+dMn .req r22
+
+en .req r24
+en1 .req r25
+en2 .req r26
+
+main
+	mov Flag01, #0x00000000
+
+	cmp ACC01, #0x00000000
+	bne flagCheck
+
+	b main
+
+flagCheck
+	cmp Flag01, #0x00000000
+	beq main
+	cmp Flag01, #0x00000001
+	beq controller
+
+	b flagCheck
+
+controller
+	cmp Xn,Xset
+	BGE firstCals
+	BLT secondCal
+
+	sub Vset, Vset - deltaV ; line 4 calculations
+
+firstCals
+	add Vcruise, 0 ; line 1 calculations
+	
+	sub en, Vset, Vn ; line 2 calculations
+	sub en1, Vset, Vn1
+	sub en2, Vset, Vn2
+	
+	mul K1, K1, en ; line 3 calculations
+	lsr K1, 2
+	mul K2, K2, en1
+	lsr K2, 2
+	mul K3, K3, en2
+	lsr K3, 2
+	add dMn, K1, K2
+	add dMn, dMn, K3
+
+	b main
+
+secondCals
+	sub Vset, Vset - deltaV ; line 4 calculations
+	
+	sub en, Vset, Vn ; line 2 calculations
+	sub en1, Vset, Vn1
+	sub en2, Vset, Vn2
+
+	mul K1, K1, en ; line 3 calculations
+	lsr K1, 2
+	mul K2, K2, en1
+	lsr K2, 2
+	mul K3, K3, en2
+	lsr K3, 2
+	add dMn, K1, K2
+	add dMn, dMn, K3
+
+	b main
+
+
