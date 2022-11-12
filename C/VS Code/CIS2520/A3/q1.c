@@ -12,10 +12,10 @@ struct node
 	struct node *left, *right;
 };
 
-void saveingToBinaryTree(char dict1[40][40], int dict2[40], struct node *binaryTree, int totTerms);
-struct node *newNode(char data[4]);
-struct node *insertLeft(struct node *root, char data[4]);
-struct node *insertRight(struct node *root, char data[4]);
+void savingToBinaryTree(char dict1[40][40], int dict2[40], struct node *binaryTree, int totTerms);
+struct node *newNode(char *data);
+struct node *insertLeft(struct node *root, char *data);
+struct node *insertRight(struct node *root, char *data);
 int expressionSep(char *argv[], char dict1[40][40], int dict2[40]);
 void findIndexes(int *openIndex, int *closeIndex, char *argv[]);
 void printPreorder(struct node *node);
@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
 	char dict1[40][40] = {""};
 	int totTerms = expressionSep(argv, dict1, dict2);
 
-	saveingToBinaryTree(dict1, dict2, binaryTree, totTerms);
+	savingToBinaryTree(dict1, dict2, binaryTree, totTerms);
 
 	findIndexes(openIndex, closeIndex, argv);
 
@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
 	return 0;
 }
 
-void saveingToBinaryTree(char dict1[40][40], int dict2[40], struct node *binaryTree, int totTerms)
+void savingToBinaryTree(char dict1[40][40], int dict2[40], struct node *binaryTree, int totTerms)
 {
 	// order for operand equals dict2 - 1;
 	// order for terms is equal to dict2
@@ -121,7 +121,7 @@ void saveingToBinaryTree(char dict1[40][40], int dict2[40], struct node *binaryT
 
 /* Helper function that allocates a new node with the
 given data and NULL left and right pointers. */
-struct node *newNode(char data[4])
+struct node *newNode(char *data)
 {
 	struct node *node = (struct node *)malloc(sizeof(struct node));
 	strcpy(node->data, data);
@@ -130,13 +130,13 @@ struct node *newNode(char data[4])
 	return (node);
 }
 // Insert on the left of the node
-struct node *insertLeft(struct node *root, char data[4])
+struct node *insertLeft(struct node *root, char *data)
 {
 	root->left = newNode(data);
 	return root->left;
 }
 // Insert on the right of the node
-struct node *insertRight(struct node *root, char data[4])
+struct node *insertRight(struct node *root, char *data)
 {
 	root->right = newNode(data);
 	return root->right;
