@@ -1,0 +1,12 @@
+{
+	"folders": [
+		{
+			"path": "CODING APPS\\C C++"
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"stdio.h": "c"
+		}
+	}
+}
