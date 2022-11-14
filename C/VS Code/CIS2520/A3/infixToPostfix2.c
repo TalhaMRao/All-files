@@ -129,7 +129,7 @@ void InfixToPostfix(char infix_exp[], char postfix_exp[])
 			}
 			push(x);
 			/* because just above while loop will terminate we have
-			oppped one extra item
+			popped one extra item
 			for which condition fails and loop terminates, so that one*/
 
 			push(item); /* push current oprerator symbol onto stack */
