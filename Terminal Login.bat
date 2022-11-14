@@ -1,1 +1,0 @@
-ssh talham@linux.socs.uoguelph.ca
