@@ -1,185 +1,195 @@
+// Name : Talha Rao
+// ID: 1088904
+// Assignment 3
+
+// This program takes in an arithematic  expression
+// for example ./q1 "(((x1+5.12)*(x2-7.28))/x3)"
+// The output of the program the strings in preorder and postorder depending on what the user decided
+// for example POSTORDER: x1 5.12 + x2 7.28 - * x3 /
+
+// IMPORTS
 #include <stdlib.h>
 #include <stdio.h>
 #include <ctype.h>
 #include <string.h>
 
+typedef struct node // creating node
+{
+    char data[15];
+    struct node *right;
+    struct node *left;
+    struct node *next;
+} node;
+
+// Initialize global stack
 char stack[100];
 int top = -1;
 
-typedef struct tree
-{
-    char x[15];
-    struct tree *right;
-    struct tree *left;
-    struct tree *next;
-} tree;
-
 // Initializing Struct:
-struct tree *head = NULL;
+struct node *head = NULL;
 
-void push(char x);
-char pop();
-int priority(char x);
-char *seperateString(char *String);
-struct tree *newBranch(char x[15]);
-struct tree *popTree();
-void pushToTree(struct tree *tree);
-void printTree(struct tree *tree);
-void printPreorder(struct tree *tree);
-void printPostorder(struct tree *tree);
+// Function declarations
+struct node *newBranch(char data[15]);
+void sPushToNode(struct node *node);
+struct node *sPopNode();
+void cPush(char data);
+char cPop();
+int priority(char data);
+void printNode(struct node *node);
+void printPreorder(struct node *node);
+void printPostorder(struct node *node);
 
 int main(int argc, char *argv[])
 {
-    struct tree *L;
-    struct tree *R;
-    struct tree *new;
-    char *e, x;
-    e = argv[1];
+    struct node *root, *right, *left;
+    char *inputStringPointer = argv[1], temp, *stringBuilder = malloc(strlen(inputStringPointer) + 1);
     int length = 0;
-    char *str2 = malloc(strlen(e) + 1);
-    char tempString_One[15] = " ";
-    char tempString_Two[15] = " ";
-    char tempString_Three[15] = " ";
 
-    while (*e != '\0')
+    while (*inputStringPointer != '\0')
     {
-        if (isalpha(*e))
+        if (isalpha(*inputStringPointer))
         {
-            printf("%c", *e);
-            str2[length] = *e;
+            stringBuilder[length] = *inputStringPointer;
             length++;
-            e++;
-            printf("%c ", *e);
-            str2[length] = *e;
+            inputStringPointer++;
+            stringBuilder[length] = *inputStringPointer;
             length++;
         }
-        else if (isdigit(*e))
+        else if (isdigit(*inputStringPointer))
         {
-            printf("%c", *e);
-            str2[length] = *e;
+            stringBuilder[length] = *inputStringPointer;
             length++;
-            e++;
-            printf("%c", *e);
-            str2[length] = *e;
+            inputStringPointer++;
+            stringBuilder[length] = *inputStringPointer;
             length++;
-            e++;
-            printf("%c", *e);
-            str2[length] = *e;
+            inputStringPointer++;
+            stringBuilder[length] = *inputStringPointer;
             length++;
-            e++;
-            printf("%c ", *e);
-            str2[length] = *e;
+            inputStringPointer++;
+            stringBuilder[length] = *inputStringPointer;
             length++;
         }
-        else if (*e == '(')
-            push(*e);
-        else if (*e == ')')
+        else if (*inputStringPointer == '(')
+            cPush(*inputStringPointer);
+        else if (*inputStringPointer == ')')
         {
-            while ((x = pop()) != '(')
+            while ((temp = cPop()) != '(')
             {
-                printf("%c ", x);
-                str2[length] = x;
+                stringBuilder[length] = temp;
                 length++;
             }
         }
         else
         {
-            while (priority(stack[top]) >= priority(*e))
+            while (priority(stack[top]) >= priority(*inputStringPointer))
             {
-                printf("%c ", pop());
-                str2[length] = *e;
+                stringBuilder[length] = *inputStringPointer;
                 length++;
             }
-            push(*e);
+            cPush(*inputStringPointer);
         }
-        e++;
+        inputStringPointer++;
     }
     while (top != -1)
     {
-        x = pop();
-        printf("%c ", x);
-        str2[length] = x;
+        temp = cPop();
+        stringBuilder[length] = temp;
         length++;
     }
 
-    str2[length] = '\0';
+    stringBuilder[length] = '\0';
 
-    printf("\n\n%s\n\n", str2);
     int i = 0;
 
-    while (i < strlen(str2))
+    char a[15] = " ", b[15] = " ", c[15] = " ";
+
+    while (i < strlen(stringBuilder))
     {
-        // If sign = character -> start a new string:
-        if (str2[i] == '-' || str2[i] == '+' || str2[i] == '/' || str2[i] == '*')
+        // If sign = character -> start a root string:
+        if (stringBuilder[i] == '-' || stringBuilder[i] == '+' || stringBuilder[i] == '/' || stringBuilder[i] == '*')
         {
-            tempString_One[0] = str2[i];
-            tempString_One[1] = '\0';
-            new = newBranch(tempString_One);
+            a[0] = stringBuilder[i];
+            a[1] = '\0';
+            root = newBranch(a);
 
-            R = popTree();
-            L = popTree();
+            right = sPopNode();
+            left = sPopNode();
 
-            new->left = L;
-            new->right = R;
+            root->left = left;
+            root->right = right;
 
-            pushToTree(new);
+            sPushToNode(root);
             i++;
         }
-        // If its therefore a variable (x1,x2,x3) then get number in front of it and create new node:
-        else if (str2[i] == 'x' || str2[i] == 'X')
+        // If its therefore a variable (x1,x2,x3) then get number in front of it and create root node:
+        else if (stringBuilder[i] == 'x')
         {
-            tempString_Two[0] = str2[i];
-            tempString_Two[1] = str2[i + 1];
+            b[0] = stringBuilder[i];
+            b[1] = stringBuilder[i + 1];
 
-            tempString_Two[2] = '\0';
-            new = newBranch(tempString_Two);
-            pushToTree(new);
+            b[2] = '\0';
+            root = newBranch(b);
+            sPushToNode(root);
             i += 2;
         }
-        else if (isdigit(str2[i]) && str2[i + 1] == '.')
+        else if (isdigit(stringBuilder[i]) && stringBuilder[i + 1] == '.')
         {
-            tempString_Three[0] = str2[i];
-            tempString_Three[1] = str2[i + 1];
-            tempString_Three[2] = str2[i + 2];
-            tempString_Three[3] = str2[i + 3];
+            c[0] = stringBuilder[i];
+            c[1] = stringBuilder[i + 1];
+            c[2] = stringBuilder[i + 2];
+            c[3] = stringBuilder[i + 3];
 
-            tempString_Three[4] = '\0';
+            c[4] = '\0';
 
-            new = newBranch(tempString_Three);
-            pushToTree(new);
+            root = newBranch(c);
+            sPushToNode(root);
 
             i += 4;
         }
     }
+    int selection = 1;
 
-    printf("PREORDER: ");
-    printPreorder(new);
-    printf("\n\n");
+    while (selection)
+    {
+        printf("In what form would you like to see your expression.\n");
+        printf("1 - Preorder.\n");
+        printf("2 - Postorder. \n");
+        printf("0 - Exit. \n");
 
-    printf("POSTORDER: ");
-    printPostorder(new);
-    printf("\n\n");
-
-    free(str2);
+        scanf("%d", &selection);
+        if (selection == 1)
+        {
+            printf("PREORDER: ");
+            printPreorder(root);
+            printf("\n\n");
+        }
+        else if (selection == 2)
+        {
+            printf("POSTORDER: ");
+            printPostorder(root);
+            printf("\n\n");
+        }
+    }
+    free(stringBuilder);
     return 0;
 }
 
 // Creating Helper Fcn:
-struct tree *newBranch(char x[15])
+struct node *newBranch(char data[15])
 {
-    // Creating space for tree:
-    struct tree *tree = (struct tree *)malloc(sizeof(struct tree));
+    // Creating space for node:
+    struct node *node = (struct node *)malloc(sizeof(struct node));
 
     // Defining node elements:
-    strcpy(tree->x, x);
-    tree->right = NULL;
-    tree->left = NULL;
-    tree->next = NULL;
+    strcpy(node->data, data);
+    node->right = NULL;
+    node->left = NULL;
+    node->next = NULL;
 
-    return (tree);
+    return (node);
 }
 
-void pushToTree(struct tree *top)
+void sPushToNode(struct node *top)
 {
 
     // setting current node pushed as head if empty:
@@ -194,19 +204,19 @@ void pushToTree(struct tree *top)
     }
 }
 
-tree *popTree()
+node *sPopNode()
 {
-    tree *test = head;
+    node *test = head;
     head = head->next;
     return test;
 }
 
-void push(char x)
+void cPush(char data)
 {
-    stack[++top] = x;
+    stack[++top] = data;
 }
 
-char pop()
+char cPop()
 {
     if (top == -1)
         return -1;
@@ -214,64 +224,64 @@ char pop()
         return stack[top--];
 }
 
-int priority(char x)
+int priority(char data)
 {
-    if (x == '(')
+    if (data == '(')
         return 0;
-    if (x == '+' || x == '-')
+    if (data == '+' || data == '-')
         return 1;
-    if (x == '*' || x == '/')
+    if (data == '*' || data == '/')
         return 2;
     return 0;
 }
 
-void printTree(struct tree *tree)
+void printNode(struct node *node)
 {
     // checking if NULL then exiting if true (void cannot return anything):
-    if (tree == NULL)
+    if (node == NULL)
     {
         return;
     }
     else
     {
         // Going to the left branch (recursion #1):
-        printTree(tree->left);
+        printNode(node->left);
 
         // Printing Data of Node:
-        printf("%s", tree->x);
+        printf("%s", node->data);
 
         // Going to the right branch (recursion #2):
-        printTree(tree->right);
+        printNode(node->right);
     }
 }
 
-void printPreorder(struct tree *tree)
+void printPreorder(struct node *node)
 {
-    // Checking to see if tree is NULL
-    if (tree == NULL)
+    // Checking to see if node is NULL
+    if (node == NULL)
     {
         return;
     }
 
     // Print node data
-    printf("%s ", tree->x);
+    printf("%s ", node->data);
     // Left branch recursion
-    printPreorder(tree->left);
+    printPreorder(node->left);
     // Right branch recursion
-    printPreorder(tree->right);
+    printPreorder(node->right);
 }
 
-void printPostorder(struct tree *tree)
+void printPostorder(struct node *node)
 {
-    // Checking to see if tree is NULL
-    if (tree == NULL)
+    // Checking to see if node is NULL
+    if (node == NULL)
     {
         return;
     }
     // Left branch recursion
-    printPostorder(tree->left);
+    printPostorder(node->left);
     // Right branch recursion
-    printPostorder(tree->right);
+    printPostorder(node->right);
     // Print node data
-    printf("%s ", tree->x);
+    printf("%s ", node->data);
 }
