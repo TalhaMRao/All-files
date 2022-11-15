@@ -6,13 +6,13 @@
 char stack[100];
 int top = -1;
 
-struct tree
+typedef struct tree
 {
     char x[15];
     struct tree *right;
     struct tree *left;
     struct tree *next;
-};
+} tree;
 
 // Initializing Struct:
 struct tree *head = NULL;
@@ -102,63 +102,63 @@ int main(int argc, char *argv[])
         length++;
     }
 
-    str2[length + 1] = '\0';
+    str2[length] = '\0';
 
     printf("\n\n%s\n\n", str2);
+    int i = 0;
 
-    for (int i = 0; i < strlen(str2) - 1; i++)
+    while (i < strlen(str2))
     {
         // If sign = character -> start a new string:
         if (str2[i] == '-' || str2[i] == '+' || str2[i] == '/' || str2[i] == '*')
         {
-
             tempString_One[0] = str2[i];
             tempString_One[1] = '\0';
             new = newBranch(tempString_One);
-            // R = popTree();
-            // L = popTree();
+
+            R = popTree();
+            L = popTree();
 
             new->left = L;
             new->right = R;
 
             pushToTree(new);
+            i++;
         }
-        // If its herefore a variable (x1,x2,x3) then get number in front of it and create new node:
-        // else
-        // {
-        //     if (str2[i] == 'x' || str2[i] == 'X')
-        //     {
-        //         tempString_Two[0] = str2[i];
-        //         tempString_Two[1] = str2[i + 1];
+        // If its therefore a variable (x1,x2,x3) then get number in front of it and create new node:
+        else if (str2[i] == 'x' || str2[i] == 'X')
+        {
+            tempString_Two[0] = str2[i];
+            tempString_Two[1] = str2[i + 1];
 
-        //         tempString_Two[2] = '\0';
-        //         new = newBranch(tempString_Two);
-        //         pushToTree(new);
-        //         i++;
-        //     }
-        //     else if (isdigit(str2[i]) && str2[i + 1] == '.')
-        //     {
-        //         tempString_Three[0] = str2[i];
-        //         tempString_Three[1] = str2[i + 1];
-        //         tempString_Three[2] = str2[i + 2];
-        //         tempString_Three[3] = str2[i + 3];
+            tempString_Two[2] = '\0';
+            new = newBranch(tempString_Two);
+            pushToTree(new);
+            i += 2;
+        }
+        else if (isdigit(str2[i]) && str2[i + 1] == '.')
+        {
+            tempString_Three[0] = str2[i];
+            tempString_Three[1] = str2[i + 1];
+            tempString_Three[2] = str2[i + 2];
+            tempString_Three[3] = str2[i + 3];
 
-        //         tempString_Three[4] = '\0';
+            tempString_Three[4] = '\0';
 
-        //         new = newBranch(tempString_Three);
+            new = newBranch(tempString_Three);
+            pushToTree(new);
 
-        //         i +=3;
-        //     }
-        // }
+            i += 4;
+        }
     }
 
-    // printf("PREORDER: ");
-    // printPreorder(new);
-    // printf("\n\n");
+    printf("PREORDER: ");
+    printPreorder(new);
+    printf("\n\n");
 
-    // printf("POSTORDER: ");
-    // printPostorder(new);
-    // printf("\n\n");
+    printf("POSTORDER: ");
+    printPostorder(new);
+    printf("\n\n");
 
     free(str2);
     return 0;
@@ -194,9 +194,9 @@ void pushToTree(struct tree *top)
     }
 }
 
-struct tree *popTree()
+tree *popTree()
 {
-    struct tree *test = head;
+    tree *test = head;
     head = head->next;
     return test;
 }
@@ -268,11 +268,10 @@ void printPostorder(struct tree *tree)
     {
         return;
     }
-
+    // Left branch recursion
+    printPostorder(tree->left);
+    // Right branch recursion
+    printPostorder(tree->right);
     // Print node data
     printf("%s ", tree->x);
-    // Left branch recursion
-    printPreorder(tree->left);
-    // Right branch recursion
-    printPreorder(tree->right);
 }

@@ -5,7 +5,7 @@
 
 struct node
 {
-	char data[4];
+	char data[10];
 	struct node *left;
 	struct node *right;
 	struct node *next;
@@ -16,26 +16,22 @@ struct node *head = NULL;
 char stack[100];
 int top = -1;
 
+int cPriority(char x);
 void cPush(char x);
 char cPop();
-int cPriority(char x);
 
 int main(int argc, char *argv[])
 {
-	char exp[100];
+	struct node *left;
+	struct node *right;
+	struct node *root;
+
 	char *e, x;
 	e = argv[1];
 
-	// printf("Enter the expression : ");
-	// scanf("%s", exp);
-	// printf("\n");
-	// e = exp;
-
-	// char *str = "";
-	// size_t len = strlen(str);
 	char *str2 = malloc(strlen(argv[1]) + 1);
-	// strcpy(str2, str);
 	int len = 0;
+
 	while (*e != '\0')
 	{
 		if (isalpha(*e))
@@ -100,15 +96,60 @@ int main(int argc, char *argv[])
 		str2[len] = x;
 		len++;
 	}
-
 	str2[len] = '\0';
-
 	printf("\n\n%s\n\n", str2);
+
+	char a[10] = " ";
+	char b[10] = " ";
+	char c[10] = " ";
+
+	for (int i = 0; i < strlen(str2); i++)
+	{
+		if (str2[i] == '-' || str2 == '+' || str2[i] == '/' || str2[i] == '*')
+		{
+			a[0] = str2[i];
+			a[1] = '\0';
+			root = newNode(a);
+		}
+		else if (str2[i] == 'x' || str2[i] == 'X')
+		{
+			b[0] = str2[i];
+			b[1] = str2[i + 1];
+			b[2] = '\0';
+			root = newBranch(b);
+			pushToTree(root);
+			i++;
+		}
+		else
+		{
+			c[0] = str2[i];
+			c[1] = str2[i + 1];
+			c[2] = str2[i + 2];
+			c[3] = str2[i + 3];
+			c[4] = '\0';
+			root = newBranch(c);
+
+			i += 4;
+		}
+	}
 
 	free(str2);
 	return 0;
 }
 
+struct node *newBranch(char x[15])
+{
+	// Creating space for tree:
+	struct node *tree = (struct node *)malloc(sizeof(struct node));
+
+	// Defining node elements:
+	strcpy(node->data, data);
+	tree->right = NULL;
+	tree->left = NULL;
+	tree->next = NULL;
+
+	return (tree);
+}
 struct node *newNode(char *data)
 {
 	struct node *node = (struct node *)malloc(sizeof(struct node));
