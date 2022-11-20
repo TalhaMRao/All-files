@@ -66,6 +66,7 @@ int main(int argc, char *argv[])
 void readingFromFile()
 {
     FILE *fp;
+
     fp_fopen(FILE_NAME, "r");
     if (!fp)
     {
