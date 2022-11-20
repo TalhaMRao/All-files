@@ -4,11 +4,9 @@
 typedef struct MinHeap MinHeap;
 struct MinHeap
 {
-    int *arr;
-    // Current Size of the Heap
-    int size;
-    // Maximum capacity of the heap
-    int capacity;
+    int sum_key;
+    int key[3];
+    int content[7];
 };
 
 int parent(int i);
