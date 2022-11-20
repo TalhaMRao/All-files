@@ -1,208 +1,185 @@
-#include <stdio.h>
-#include <stdlib.h>
+// Name : Talha Rao
+// ID: 1088904
+// Assignment 3
 
-typedef struct MinHeap MinHeap;
-struct MinHeap
+// This program takes in an arithematic  expression
+// for example ./q1 "(((x1+5.12)*(x2-7.28))/x3)"
+// The output of the program the strings in preorder and postorder depending on what the user decided
+// for example POSTORDER: x1 5.12 + x2 7.28 - * x3 /
+
+// IMPORTS
+#include <stdlib.h>
+#include <stdio.h>
+#include <ctype.h>
+#include <string.h>
+
+#define FILE_MAX 20
+#define FILE_NAME "f.dat"
+
+// typedef struct node // creating node
+// {
+//     char data[15];
+//     struct node *right;
+//     struct node *left;
+//     struct node *next;
+// } node;
+typedef struct node // creating node
 {
     int sum_key;
     int key[3];
     int content[7];
-};
 
-int parent(int i);
-int left_child(int i);
-int right_child(int i);
-int get_min(MinHeap *heap);
-MinHeap *init_minheap(int capacity);
-MinHeap *insert_minheap(MinHeap *heap, int element);
-MinHeap *heapify(MinHeap *heap, int index);
-MinHeap *delete_minimum(MinHeap *heap);
-MinHeap *delete_element(MinHeap *heap, int index);
-void print_heap(MinHeap *heap);
-void free_minheap(MinHeap *heap);
+    char data[15];
+    struct node *right;
+    struct node *left;
+    struct node *next;
+} node;
 
-int main()
+// Initialize global stack
+char stack[100];
+int top = -1;
+
+// Initializing Struct:
+struct node *head = NULL;
+
+// Function declarations
+struct node *newBranch(char data[15]);
+void sPushToNode(struct node *node);
+struct node *sPopNode();
+void cPush(char data);
+char cPop();
+int cPrio(char data);
+void printNode(struct node *node);
+void printPreorder(struct node *node);
+void printPostorder(struct node *node);
+
+int main(int argc, char *argv[])
 {
-    // Capacity of 10 elements
-    MinHeap *heap = init_minheap(10);
+    struct node *root, *right, *left;
+    char *inputStringPointer = argv[1], temp, *stringBuilder = malloc(strlen(inputStringPointer) + 1);
+    int len = 0;
 
-    insert_minheap(heap, 40);
-    insert_minheap(heap, 50);
-    insert_minheap(heap, 5);
-    print_heap(heap);
-
-    // Delete the heap->arr[1] (50)
-    delete_element(heap, 1);
-
-    print_heap(heap);
-    free_minheap(heap);
+    free(stringBuilder);
     return 0;
 }
 
-int parent(int i)
+void readingFromFile()
 {
-    // Get the index of the parent
-    return (i - 1) / 2;
-}
-
-int left_child(int i)
-{
-    return (2 * i + 1);
-}
-
-int right_child(int i)
-{
-    return (2 * i + 2);
-}
-
-int get_min(MinHeap *heap)
-{
-    // Return the root node element,
-    // since that's the minimum
-    return heap->arr[0];
-}
-
-MinHeap *init_minheap(int capacity)
-{
-    MinHeap *minheap = (MinHeap *)calloc(1, sizeof(MinHeap));
-    minheap->arr = (int *)calloc(capacity, sizeof(int));
-    minheap->capacity = capacity;
-    minheap->size = 0;
-    return minheap;
-}
-
-MinHeap *insert_minheap(MinHeap *heap, int element)
-{
-    // Inserts an element to the min heap
-    // We first add it to the bottom (last level)
-    // of the tree, and keep swapping with it's parent
-    // if it is lesser than it. We keep doing that until
-    // we reach the root node. So, we will have inserted the
-    // element in it's proper position to preserve the min heap property
-    if (heap->size == heap->capacity)
+    FILE *fp;
+    fp_fopen(FILE_NAME, "r");
+    if (!fp)
     {
-        fprintf(stderr, "Cannot insert %d. Heap is already full!\n", element);
-        return heap;
+        perror("Error opening file");
     }
-    // We can add it. Increase the size and add it to the end
-    heap->size++;
-    heap->arr[heap->size - 1] = element;
+}
 
-    // Keep swapping until we reach the root
-    int curr = heap->size - 1;
-    // As long as you aren't in the root node, and while the
-    // parent of the last element is greater than it
-    while (curr > 0 && heap->arr[parent(curr)] > heap->arr[curr])
+// Creating Helper Fcn:
+struct node *newBranch(char data[15])
+{
+    // Creating space for node:
+    struct node *node = (struct node *)malloc(sizeof(struct node));
+
+    // Defining node elements:
+    strcpy(node->data, data);
+    node->right = NULL;
+    node->left = NULL;
+    node->next = NULL;
+
+    return (node);
+}
+
+void sPushToNode(struct node *top)
+{
+    // setting current node pushed as head if empty:
+    if (head == NULL)
     {
-        // Swap
-        int temp = heap->arr[parent(curr)];
-        heap->arr[parent(curr)] = heap->arr[curr];
-        heap->arr[curr] = temp;
-        // Update the current index of element
-        curr = parent(curr);
+        head = top;
     }
-    return heap;
-}
-
-MinHeap *heapify(MinHeap *heap, int index)
-{
-    // Rearranges the heap as to maintain
-    // the min-heap property
-    if (heap->size <= 1)
-        return heap;
-
-    int left = left_child(index);
-    int right = right_child(index);
-
-    // Variable to get the smallest element of the subtree
-    // of an element an index
-    int smallest = index;
-
-    // If the left child is smaller than this element, it is
-    // the smallest
-    if (left < heap->size && heap->arr[left] < heap->arr[index])
-        smallest = left;
-
-    // Similarly for the right, but we are updating the smallest element
-    // so that it will definitely give the least element of the subtree
-    if (right < heap->size && heap->arr[right] < heap->arr[smallest])
-        smallest = right;
-
-    // Now if the current element is not the smallest,
-    // swap with the current element. The min heap property
-    // is now satisfied for this subtree. We now need to
-    // recursively keep doing this until we reach the root node,
-    // the point at which there will be no change!
-    if (smallest != index)
+    else
     {
-        int temp = heap->arr[index];
-        heap->arr[index] = heap->arr[smallest];
-        heap->arr[smallest] = temp;
-        heap = heapify(heap, smallest);
+        (top)->next = head;
+        head = top;
     }
-
-    return heap;
 }
 
-MinHeap *delete_minimum(MinHeap *heap)
+node *sPopNode()
 {
-    // Deletes the minimum element, at the root
-    if (!heap || heap->size == 0)
-        return heap;
-
-    int size = heap->size;
-    int last_element = heap->arr[size - 1];
-
-    // Update root value with the last element
-    heap->arr[0] = last_element;
-
-    // Now remove the last element, by decreasing the size
-    heap->size--;
-    size--;
-
-    // We need to call heapify(), to maintain the min-heap
-    // property
-    heap = heapify(heap, 0);
-    return heap;
+    node *test = head;
+    head = head->next;
+    return test;
 }
 
-MinHeap *delete_element(MinHeap *heap, int index)
+void cPush(char data)
 {
-    // Deletes an element, indexed by index
-    // Ensure that it's lesser than the current root
-    heap->arr[index] = get_min(heap) - 1;
+    stack[++top] = data;
+}
 
-    // Now keep swapping, until we update the tree
-    int curr = index;
-    while (curr > 0 && heap->arr[parent(curr)] > heap->arr[curr])
+char cPop()
+{
+    if (top == -1)
+        return -1;
+    else
+        return stack[top--];
+}
+
+int cPrio(char data)
+{
+    if (data == '(')
+        return 0;
+    if (data == '+' || data == '-')
+        return 1;
+    if (data == '*' || data == '/')
+        return 2;
+    return 0;
+}
+
+void printNode(struct node *node)
+{
+    // checking if NULL then exiting if true (void cannot return anything):
+    if (node == NULL)
     {
-        int temp = heap->arr[parent(curr)];
-        heap->arr[parent(curr)] = heap->arr[curr];
-        heap->arr[curr] = temp;
-        curr = parent(curr);
-    }
-
-    // Now simply delete the minimum element
-    heap = delete_minimum(heap);
-    return heap;
-}
-
-void print_heap(MinHeap *heap)
-{
-    // Simply print the array. This is an
-    // inorder traversal of the tree
-    printf("Min Heap:\n");
-    for (int i = 0; i < heap->size; i++)
-    {
-        printf("%d -> ", heap->arr[i]);
-    }
-    printf("\n");
-}
-
-void free_minheap(MinHeap *heap)
-{
-    if (!heap)
         return;
-    free(heap->arr);
-    free(heap);
+    }
+    else
+    {
+        // Going to the left branch (recursion #1):
+        printNode(node->left);
+
+        // Printing Data of Node:
+        printf("%s", node->data);
+
+        // Going to the right branch (recursion #2):
+        printNode(node->right);
+    }
+}
+
+void printPreorder(struct node *node)
+{
+    // Checking to see if node is NULL
+    if (node == NULL)
+    {
+        return;
+    }
+
+    // Print node data
+    printf("%s ", node->data);
+    // Left branch recursion
+    printPreorder(node->left);
+    // Right branch recursion
+    printPreorder(node->right);
+}
+
+void printPostorder(struct node *node)
+{
+    // Checking to see if node is NULL
+    if (node == NULL)
+    {
+        return;
+    }
+    // Left branch recursion
+    printPostorder(node->left);
+    // Right branch recursion
+    printPostorder(node->right);
+    // Print node data
+    printf("%s ", node->data);
 }
