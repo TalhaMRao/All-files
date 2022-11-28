@@ -112,17 +112,19 @@ node deleteMin(minHeap *heap)
 
 void printHeap(minHeap *heap)
 {
-	printf("nHeap = n");
+	printf("nHeap = n\n");
 
 	for (int i = 0; i < heap->size; i++)
 	{
+		printf("n\n");
+
 		printf("%d", heap->nodes[i].sum_key);
 
 		for (int j = 0; j < 7; j++)
 		{
 			printf("%d,", heap->nodes[i].content[j]);
 		}
-		printf("n");
+		// printf("n");
 	}
 }
 
@@ -133,15 +135,17 @@ int main()
 
 	FILE *fp = fopen("f.dat", "r");
 
-	for (int i = 0; i < 200; i++)
+	for (int i = 0; i < 20; i++)
 	{
 		node element;
 		int sum_key = 0;
 		for (int j = 0; j < 3; j++)
 		{
 			fscanf(fp, "%d", &element.sum_key);
+			element.key[j] = element.sum_key;
 			sum_key += element.sum_key;
 		}
+
 		element.sum_key = sum_key;
 
 		for (int j = 0; j < 7; j++)
