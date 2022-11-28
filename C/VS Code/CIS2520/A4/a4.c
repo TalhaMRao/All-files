@@ -70,7 +70,7 @@ void insert(minHeap *heap, node element)
 node deleteMin(minHeap *heap)
 {
 	node element = heap->nodes[0];
-	heap->nodes[0] = heap->nodes[h->size - 1];
+	heap->nodes[0] = heap->nodes[heap->size - 1];
 	heap->size--;
 
 	int current = 0;
