@@ -79,10 +79,10 @@ node deleteMin(minHeap *heap)
 
 	while (rightChild < heap->size)
 	{
-		if (heap->nodes[current].key >= heap->nodes[leftChild].key && heap->nodes[current].key >= heap->nodes[rightChild].key)
+		if (heap->nodes[current].sum_key >= heap->nodes[leftChild].sum_key && heap->nodes[current].sum_key >= heap->nodes[rightChild].sum_key)
 			break;
 
-		if (heap->nodes[leftChild].key > heap->nodes[rightChild].key)
+		if (heap->nodes[leftChild].sum_key > heap->nodes[rightChild].sum_key)
 		{
 			node temp = heap->nodes[current];
 			heap->nodes[current] = heap->nodes[leftChild];
@@ -100,25 +100,59 @@ node deleteMin(minHeap *heap)
 		}
 	}
 
-	if (leftChild == heap->size && heap->nodes[current].key < heap->nodes[leftChild].key)
+	if (leftChild == heap->size && heap->nodes[current].sum_key < heap->nodes[leftChild].sum_key)
 	{
 		node temp = heap->nodes[current];
 		heap->nodes[current] = heap->nodes[leftChild];
 		heap->nodes[leftChild] = temp;
 	}
+
+	return element;
+}
+
+void printHeap(minHeap *heap)
+{
+	printf("nHeap = n");
+
+	for (int i = 0; i < heap->size; i++)
+	{
+		printf("%d", heap->nodes[i].sum_key);
+
+		for (int j = 0; j < 7; j++)
+		{
+			printf("%d,", heap->nodes[i].content[j]);
+		}
+		printf("n");
+	}
 }
 
 int main()
 {
-	node heap[20];
-	int error;
-	error = readFile(heap);
-	if (error)
+	int capacity = 20;
+	minHeap *heap = heapBuilder(capacity);
+
+	FILE *fp = fopen("f.dat", "r");
+
+	for (int i = 0; i < 200; i++)
 	{
-		perror("Error opening file");
-		return -1;
+		node element;
+		int sum_key = 0;
+		for (int j = 0; j < 3; j++)
+		{
+			fscanf(fp, "%d", &element.sum_key);
+			sum_key += element.sum_key;
+		}
+		element.sum_key = sum_key;
+
+		for (int j = 0; j < 7; j++)
+		{
+			fscanf(fp, "%d", &element.content[j]);
+		}
+		insert(heap, element);
 	}
 
+	printHeap(heap);
+	fclose(fp);
 	return 0;
 }
 
