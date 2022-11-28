@@ -112,11 +112,11 @@ node deleteMin(minHeap *heap)
 
 void printHeap(minHeap *heap)
 {
-	printf("nHeap = n\n");
+	printf("nHeap = n\n\n");
 
 	for (int i = 0; i < heap->size; i++)
 	{
-		printf("n\n");
+		printf("\n");
 
 		printf("%d", heap->nodes[i].sum_key);
 
