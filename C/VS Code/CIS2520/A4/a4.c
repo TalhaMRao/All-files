@@ -67,6 +67,7 @@ void insert(minHeap *heap, node element)
 	}
 	heap->size++;
 }
+
 node deleteMin(minHeap *heap)
 {
 	node element = heap->nodes[0];
@@ -118,12 +119,12 @@ void printHeap(minHeap *heap)
 	{
 		printf("\n");
 
-		printf("%d", heap->nodes[i].sum_key);
+		printf("%d\t", heap->nodes[i].sum_key);
 
+		for (int j = 0; j < 3; j++)
+			printf("%d,", heap->nodes[i].key[j]);
 		for (int j = 0; j < 7; j++)
-		{
 			printf("%d,", heap->nodes[i].content[j]);
-		}
 		// printf("n");
 	}
 }
