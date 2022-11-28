@@ -125,8 +125,8 @@ void printHeap(minHeap *heap)
 			printf("%d,", heap->nodes[i].key[j]);
 		for (int j = 0; j < 7; j++)
 			printf("%d,", heap->nodes[i].content[j]);
-		// printf("n");
 	}
+	printf("n");
 }
 
 int main()
