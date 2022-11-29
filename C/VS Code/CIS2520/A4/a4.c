@@ -18,6 +18,7 @@ typedef struct Node
 void heapSort(node heap[]);
 void heapify(node heap[], int x, int y);
 void swap(node *x, node *y);
+void fileRead(node heap[]);
 void printHeap(node *heap);
 
 // Main method /////////////////////////////////////////////////
@@ -25,26 +26,7 @@ int main()
 {
 	node heap[FILE_MAX]; // creating a heap of size 20
 
-	FILE *fp = fopen(FILE_NAME, "r"); // opening file
-
-	for (int i = 0; i < FILE_MAX; i++) // loop iterates through the length of the file (hard coded)
-	{
-		node element;				// temporary element
-		int sum_key = 0;			// temp sum
-		for (int j = 0; j < 3; j++) // for loop to count the first 3 digits and save them in the key
-		{
-			fscanf(fp, "%d", &element.key[j]); // reads the integer seperated by a space and saves it to the key with index j
-			sum_key += element.key[j];		   // saves the sum into temp sum key
-		}
-		element.sum_key = sum_key; // save the sum into the permamenent sum key
-
-		for (int j = 0; j < 7; j++) // for loop to count the last 7 digits and save them in the key
-		{
-			fscanf(fp, "%d", &element.content[j]); // reads the integer seperated by a space and saves it to the content with index j
-		}
-		heap[i] = element; // saves the temp element into the actual unsorted heap
-	}
-	fclose(fp); // close file
+	fileRead(heap);
 
 	for (int i = FILE_MAX; i >= 0; i--) // Iterates through the heap array backwards
 		heapify(heap, i, FILE_MAX);		// Calls the heapify function and sorts the heap based on the heapify algorithm line by line
@@ -52,7 +34,6 @@ int main()
 
 	return 0;
 }
-
 /* This function recieves the heap that needs to be sorted, the index of the current key and the max size that needs to be sorted
  * It sorts the heap based on the heapify sorting algorithm
  * It dosent return anything but instead modifies the heap array sent to it
@@ -84,6 +65,33 @@ void swap(node *x, node *y)
 	node temp = *x; // temp to hold x address
 	*x = *y;		// swap y address to x
 	*y = temp;		// swap x address to y
+}
+/* It recieves the entire empty heap that need to be filled
+ * It simply reads the .dat file and saves the input into the heap
+ * It dosent return anything but modifies the heap sent so that it is filled now
+ */
+void fileRead(node heap[])
+{
+	FILE *fp = fopen(FILE_NAME, "r"); // opening file
+
+	for (int i = 0; i < FILE_MAX; i++) // loop iterates through the length of the file (hard coded)
+	{
+		node element;				// temporary element
+		int sum_key = 0;			// temp sum
+		for (int j = 0; j < 3; j++) // for loop to count the first 3 digits and save them in the key
+		{
+			fscanf(fp, "%d", &element.key[j]); // reads the integer seperated by a space and saves it to the key with index j
+			sum_key += element.key[j];		   // saves the sum into temp sum key
+		}
+		element.sum_key = sum_key; // save the sum into the permamenent sum key
+
+		for (int j = 0; j < 7; j++) // for loop to count the last 7 digits and save them in the key
+		{
+			fscanf(fp, "%d", &element.content[j]); // reads the integer seperated by a space and saves it to the content with index j
+		}
+		heap[i] = element; // saves the temp element into the actual unsorted heap
+	}
+	fclose(fp); // close file
 }
 /* It recieves the entire heap that need to be printed
  * It simply prints the entire heap
