@@ -1,172 +1,104 @@
-// Name : Talha Rao
-// ID: 1088904
-// Assignment 4
-
-//
-
-// IMPORTS
+// IMPORTS /////////////////////////////////////////////////////
 #include <stdlib.h>
 #include <stdio.h>
-#include <ctype.h>
-#include <string.h>
 
-#define FILE_MAX 20
-#define FILE_NAME "f.dat"
+// Global Variables ////////////////////////////////////////////
+#define FILE_MAX 20		  // size of file
+#define FILE_NAME "f.dat" // file name
 
-typedef struct Node // creating node
+// Defining structs ////////////////////////////////////////////
+typedef struct Node
 {
 	int sum_key;
 	int key[3];
 	int content[7];
 } node;
 
-typedef struct heaping
-{
-	node *nodes;
-	int capacity;
-	int size;
-} minHeap;
+// Function declarations (4 functions) /////////////////////////
+void heapSort(node heap[]);
+void heapify(node heap[], int x, int y);
+void swap(node *x, node *y);
+void printHeap(node *heap);
 
-int readFile(node *heap);
-
-minHeap *heapBuilder(int capacity)
-{
-	minHeap *heap = malloc(sizeof(minHeap));
-	heap->nodes = (node *)malloc(capacity * sizeof(node));
-	heap->capacity = capacity;
-	heap->size = 0;
-	return heap;
-}
-
-int isFull(minHeap *heap)
-{
-	return heap->size == heap->capacity;
-}
-
-int isEmpty(minHeap *heap)
-{
-	return heap->size == 0;
-}
-
-void insert(minHeap *heap, node element)
-{
-	if (isFull(heap))
-		return;
-
-	heap->nodes[heap->size] = element;
-
-	int current = heap->size;
-
-	while (current != 0 && heap->nodes[current].sum_key > heap->nodes[(current - 1) / 2].sum_key)
-	{
-		node temp = heap->nodes[(current - 1) / 2];
-		heap->nodes[(current - 1) / 2] = heap->nodes[current];
-		heap->nodes[current] = temp;
-
-		current = (current - 1) / 2;
-	}
-	heap->size++;
-}
-
-node deleteMin(minHeap *heap)
-{
-	node element = heap->nodes[0];
-	heap->nodes[0] = heap->nodes[heap->size - 1];
-	heap->size--;
-
-	int current = 0;
-	int leftChild = 1;
-	int rightChild = 2;
-
-	while (rightChild < heap->size)
-	{
-		if (heap->nodes[current].sum_key >= heap->nodes[leftChild].sum_key && heap->nodes[current].sum_key >= heap->nodes[rightChild].sum_key)
-			break;
-
-		if (heap->nodes[leftChild].sum_key > heap->nodes[rightChild].sum_key)
-		{
-			node temp = heap->nodes[current];
-			heap->nodes[current] = heap->nodes[leftChild];
-			heap->nodes[leftChild] = temp;
-		}
-		else
-		{
-			node temp = heap->nodes[current];
-			heap->nodes[current] = heap->nodes[rightChild];
-			heap->nodes[rightChild] = temp;
-
-			current = rightChild;
-			leftChild = 2 * current + 1;
-			rightChild = 2 * current + 2;
-		}
-	}
-
-	if (leftChild == heap->size && heap->nodes[current].sum_key < heap->nodes[leftChild].sum_key)
-	{
-		node temp = heap->nodes[current];
-		heap->nodes[current] = heap->nodes[leftChild];
-		heap->nodes[leftChild] = temp;
-	}
-
-	return element;
-}
-
-void printHeap(minHeap *heap)
-{
-	printf("nHeap = n\n\n");
-
-	for (int i = 0; i < heap->size; i++)
-	{
-		printf("\n");
-
-		printf("%d\t", heap->nodes[i].sum_key);
-
-		for (int j = 0; j < 3; j++)
-			printf("%d,", heap->nodes[i].key[j]);
-		for (int j = 0; j < 7; j++)
-			printf("%d,", heap->nodes[i].content[j]);
-	}
-	printf("n");
-}
-
+// Main method /////////////////////////////////////////////////
 int main()
 {
-	int capacity = 20;
-	minHeap *heap = heapBuilder(capacity);
+	node heap[FILE_MAX]; // creating a heap of size 20
 
-	FILE *fp = fopen("f.dat", "r");
+	FILE *fp = fopen(FILE_NAME, "r"); // opening file
 
-	for (int i = 0; i < 20; i++)
+	for (int i = 0; i < FILE_MAX; i++) // loop iterates through the length of the file (hard coded)
 	{
-		node element;
-		int sum_key = 0;
-		for (int j = 0; j < 3; j++)
+		node element;				// temporary element
+		int sum_key = 0;			// temp sum
+		for (int j = 0; j < 3; j++) // for loop to count the first 3 digits and save them in the key
 		{
-			fscanf(fp, "%d", &element.sum_key);
-			element.key[j] = element.sum_key;
-			sum_key += element.sum_key;
+			fscanf(fp, "%d", &element.key[j]); // reads the integer seperated by a space and saves it to the key with index j
+			sum_key += element.key[j];		   // saves the sum into temp sum key
 		}
+		element.sum_key = sum_key; // save the sum into the permamenent sum key
 
-		element.sum_key = sum_key;
-
-		for (int j = 0; j < 7; j++)
+		for (int j = 0; j < 7; j++) // for loop to count the last 7 digits and save them in the key
 		{
-			fscanf(fp, "%d", &element.content[j]);
+			fscanf(fp, "%d", &element.content[j]); // reads the integer seperated by a space and saves it to the content with index j
 		}
-		insert(heap, element);
+		heap[i] = element; // saves the temp element into the actual unsorted heap
 	}
+	fclose(fp); // close file
 
-	printHeap(heap);
-	fclose(fp);
+	for (int i = FILE_MAX; i >= 0; i--) // Iterates through the heap array backwards
+		heapify(heap, i, FILE_MAX);		// Calls the heapify function and sorts the heap based on the heapify algorithm line by line
+	printHeap(heap);					// Prints the sorted heap
+
 	return 0;
 }
 
-int readFile(node *heap)
+/* This function recieves the heap that needs to be sorted, the index of the current key and the max size that needs to be sorted
+ * It sorts the heap based on the heapify sorting algorithm
+ * It dosent return anything but instead modifies the heap array sent to it
+ */
+void heapify(node heap[], int i, int x)
 {
-	FILE *file = fopen(FILE_NAME, "r");
-	if (!file)
+	int smallest = i;	   // saves the index i to the smallest variable
+	int left = 2 * i + 1;  // saves left and right based on the formula
+	int right = 2 * i + 2; // saves right
+
+	if ((heap[left].sum_key < heap[smallest].sum_key) && (left < x)) // if the left number is less then the smallest and left is less than the new largest index
+		smallest = left;											 // left is the new smallest
+
+	if ((heap[right].sum_key < heap[smallest].sum_key) && (right < x)) // if the right  number is less then the smallest and right is less than the new largest index
+		smallest = right;											   // right is the new smallest
+
+	if (smallest != i) // if not at the end of the heap
 	{
-		perror("Error opening file");
-		return -1;
+		swap(&heap[i], &heap[smallest]); // swap the smallest and current i
+		heapify(heap, smallest, x);		 // recursively call this alorithm to do the process again until the entire loop is sorted
 	}
+}
+/* It recieves 2 node pointers that need to be swapped
+ * It simply swaps the position of the nodes
+ * It dosent return anything
+ */
+void swap(node *x, node *y)
+{
+	node temp = *x; // temp to hold x address
+	*x = *y;		// swap y address to x
+	*y = temp;		// swap x address to y
+}
+/* It recieves the entire heap that need to be printed
+ * It simply prints the entire heap
+ * It dosent return anything
+ */
+void printHeap(node *heap)
+{
+	for (int i = 0; i < FILE_MAX; i++) // iterates for the entire length of the heap
+	{
+		printf("\n"); // adds new line after each line
+
+		for (int j = 0; j < 3; j++)
+			printf("%d ", heap[i].key[j]); // prints the first 3 key
+		for (int j = 0; j < 7; j++)
+			printf("%d ", heap[i].content[j]); // prints the last 7 digits
+	}
+	printf("\n\n"); // adds 2 newlines at the end to loop pretty
 }
