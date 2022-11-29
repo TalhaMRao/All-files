@@ -54,18 +54,6 @@ void heapSort(node heap[])
 {
 	for (int i = FILE_MAX; i >= 0; i--)
 		heapify(heap, i, FILE_MAX);
-	// for (int i = FILE_MAX - 1; i >= 0; i--)
-	// {
-	// 	swap(&heap[0], &heap[i]);
-	// 	heapify(heap, 0, i);
-	// }
-	// for (int i = FILE_MAX / 2 - 1; i >= 0; i--)
-	// 	heapify(heap, i, FILE_MAX);
-	// for (int i = FILE_MAX - 1; i >= 0; i--)
-	// {
-	// 	swap(&heap[0], &heap[i]);
-	// 	heapify(heap, 0, i);
-	// }
 }
 
 void heapify(node heap[], int i, int x)
