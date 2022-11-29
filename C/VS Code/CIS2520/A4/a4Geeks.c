@@ -52,31 +52,38 @@ int main()
 
 void heapSort(node heap[])
 {
-	for (int i = FILE_MAX / 2 - 1; i >= 0; i--)
+	for (int i = FILE_MAX; i >= 0; i--)
 		heapify(heap, i, FILE_MAX);
-	for (int i = FILE_MAX - 1; i >= 0; i--)
-	{
-		swap(&heap[0], &heap[i]);
-		heapify(heap, 0, i);
-	}
+	// for (int i = FILE_MAX - 1; i >= 0; i--)
+	// {
+	// 	swap(&heap[0], &heap[i]);
+	// 	heapify(heap, 0, i);
+	// }
+	// for (int i = FILE_MAX / 2 - 1; i >= 0; i--)
+	// 	heapify(heap, i, FILE_MAX);
+	// for (int i = FILE_MAX - 1; i >= 0; i--)
+	// {
+	// 	swap(&heap[0], &heap[i]);
+	// 	heapify(heap, 0, i);
+	// }
 }
 
-void heapify(node heap[], int x, int y)
+void heapify(node heap[], int i, int x)
 {
-	int bigN = x;
-	int left = 2 * x + 1;
-	int right = 2 * x + 2;
+	int smallest = i;
+	int left = 2 * i + 1;
+	int right = 2 * i + 2;
 
-	if ((heap[left].sum_key > heap[bigN].sum_key) && (left < y))
-		bigN = left;
+	if ((heap[left].sum_key < heap[smallest].sum_key) && (left < x))
+		smallest = left;
 
-	if ((heap[right].sum_key > heap[bigN].sum_key) && (right < y))
-		bigN = right;
+	if ((heap[right].sum_key < heap[smallest].sum_key) && (right < x))
+		smallest = right;
 
-	if (bigN != x)
+	if (smallest != i)
 	{
-		swap(&heap[x], &heap[bigN]);
-		heapify(heap, bigN, x);
+		swap(&heap[i], &heap[smallest]);
+		heapify(heap, smallest, x);
 	}
 }
 
