@@ -14,6 +14,9 @@ typedef struct Node // creating node
 	int content[7];
 } node;
 
+void heapSort(node heap[]);
+void heapify(node heap[], int x, int y);
+void swap(node *x, node *y);
 void printHeap(node *heap);
 
 int main()
@@ -39,10 +42,49 @@ int main()
 		}
 		heap[i] = element;
 	}
-
-	printHeap(heap);
 	fclose(fp);
+
+	heapSort(heap);
+	printHeap(heap);
+
 	return 0;
+}
+
+void heapSort(node heap[])
+{
+	for (int i = FILE_MAX / 2 - 1; i >= 0; i--)
+		heapify(heap, i, FILE_MAX);
+	for (int i = FILE_MAX - 1; i >= 0; i--)
+	{
+		swap(&heap[0], &heap[i]);
+		heapify(heap, 0, i);
+	}
+}
+
+void heapify(node heap[], int x, int y)
+{
+	int bigN = x;
+	int left = 2 * x + 1;
+	int right = 2 * x + 2;
+
+	if ((heap[left].sum_key > heap[bigN].sum_key) && (left < y))
+		bigN = left;
+
+	if ((heap[right].sum_key > heap[bigN].sum_key) && (right < y))
+		bigN = right;
+
+	if (bigN != x)
+	{
+		swap(&heap[x], &heap[bigN]);
+		heapify(heap, bigN, x);
+	}
+}
+
+void swap(node *x, node *y)
+{
+	node temp = *x;
+	*x = *y;
+	*y = temp;
 }
 
 void printHeap(node *heap)
