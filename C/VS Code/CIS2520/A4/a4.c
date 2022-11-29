@@ -1,11 +1,9 @@
 // IMPORTS /////////////////////////////////////////////////////
 #include <stdlib.h>
 #include <stdio.h>
-
 // Global Variables ////////////////////////////////////////////
 #define FILE_MAX 20		  // size of file
 #define FILE_NAME "f.dat" // file name
-
 // Defining structs ////////////////////////////////////////////
 typedef struct Node
 {
@@ -13,13 +11,11 @@ typedef struct Node
 	int key[3];
 	int content[7];
 } node;
-
 // Function declarations (4 functions) /////////////////////////
 void heapify(node heap[], int x, int y);
 void swap(node *x, node *y);
 void fileRead(node heap[]);
 void printHeap(node *heap);
-
 // Main method /////////////////////////////////////////////////
 int main()
 {
