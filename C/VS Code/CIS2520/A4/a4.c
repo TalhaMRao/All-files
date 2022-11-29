@@ -15,7 +15,6 @@ typedef struct Node
 } node;
 
 // Function declarations (4 functions) /////////////////////////
-void heapSort(node heap[]);
 void heapify(node heap[], int x, int y);
 void swap(node *x, node *y);
 void fileRead(node heap[]);
@@ -26,7 +25,7 @@ int main()
 {
 	node heap[FILE_MAX]; // creating a heap of size 20
 
-	fileRead(heap);
+	fileRead(heap); // calls the file reader function
 
 	for (int i = FILE_MAX; i >= 0; i--) // Iterates through the heap array backwards
 		heapify(heap, i, FILE_MAX);		// Calls the heapify function and sorts the heap based on the heapify algorithm line by line
