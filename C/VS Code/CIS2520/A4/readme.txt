@@ -6,6 +6,12 @@ Assignment 4
 This program takes in an "f.dat" file with that specific name that has 20x10 numbers in it. It then saves each line in a struct array with a size of 20.
 This struct is utilized as a heap and the data is sorted with a downHeap algorithm.
 
+Quoted question:
+"It reads 200 2-digit integers from text file “f.dat” and stores the integers in an array of 20 rows and 10 columns. The program treats each row of the array as
+an object, with the sum of the first three integers being the key, and the other seven integers being the information content. The program then creates a heap with a node containing an
+object. You are required to use an array representation of heap, and apply the parental node downheap algorithm in the array representation. The program finally displays the heap as a
+20 × 10 array, a row for an object"
+
 There is no input required from the user other than a .dat file.
 The output of the program is the correctly sorted struct heap.
 
@@ -62,5 +68,3 @@ PS C:\Users\talha\Desktop\All-files\C\VS Code\CIS2520\A4> .\a4
 62 74 67 19 41 35 38 16 9 80
 47 44 85 30 84 53 28 42 7 65
 3 98 29 5 60 15 98 86 4 61
-
-PS C:\Users\talha\Desktop\All-files\C\VS Code\CIS2520\A4>
